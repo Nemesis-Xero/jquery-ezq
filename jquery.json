@@ -1,0 +1,33 @@
+{
+    "name": "ezq",
+    "version": "1.0.0-RC1",
+    "title": "jQuery EzQ",
+    "author": {
+        "name": "Peter Lunneberg",
+		"email": "plunn.dev@gmail.com",
+        "url": "https://github.com/Nemesis-Xero"
+    },
+    "licenses": [
+        {
+            "type": "GPLv3",
+            "url": "https://github.com/Nemesis-Xero/jquery-ezq/blob/master/GNUGPL-V3.txt"
+        }
+    ],
+    "dependencies": {
+        "jquery": ">=1.8"
+    },
+    "description": "EzQ is a jQuery plugin designed to facilitate rapid implementation of jQuery's queue functionality.",
+    "keywords": [
+        "queue",
+        "dequeue",
+		"easy"
+    ],
+    "homepage": "https://github.com/Nemesis-Xero/jquery-ezq",
+    "maintainers": [
+        {
+            "name": "Peter Lunneberg",
+			"email": "plunn.dev@gmail.com",
+            "url": "https://github.com/Nemesis-Xero"
+        }
+    ]
+}
