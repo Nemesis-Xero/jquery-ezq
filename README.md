@@ -4,7 +4,7 @@ EzQ is a jQuery plugin designed to facilitate rapid implementation of jQuery's q
 
 At its most simplistic level, it is a simple wrapper for the jQuery queue functionality. Some built-in features that make it stand out a bit:
 
-1. Much simpler and more familiar interface with jQuery's queue functionality
+1. Much simpler and more familiar interface for jQuery's queue functionality
 2. Optional Auto-Delay between queued function calls
 3. Customizable logic defining when to continue while auto-delay is engaged
 4. Extensible without modification to the plugin's code
