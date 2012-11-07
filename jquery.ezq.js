@@ -18,22 +18,22 @@
 (function($){
 	
 	var defaultOptions = {
-		queue: {
-			name: 'newQueue',
+		q: {
+			name: 'newQ',
 			autoDelay: false
 		}
 	};
 	
 	$.fn.ezq = function(options) {
-		var newQueue = $.extend(true, {}, baseQueueObject, defaultOptions, options);
-		newQueue.dom = this;
-		newQueue.init();
-		this.data('ezq-' + options.queue.name, newQueue);
+		var newQ = $.extend(true, {}, baseQ, defaultOptions, options);
+		newQ.dom = this;
+		newQ.init();
+		this.data('ezq-' + options.q.name, newQ);
 		
-		return newQueue;
+		return newQ;
 	}
 	
-	var baseQueueObject = {
+	var baseQ = {
 		/**
 		 * Reference to the DOM element to which this EzQ is attached.
 		 */
@@ -42,7 +42,7 @@
 		/**
 		 * Configuration and status properties for the EzQ.
 		 */
-		queue: {
+		q: {
 			name: null,
 			autoDelay: null,
 			autoDelayMs: null,
@@ -53,7 +53,7 @@
 		
 		/**
 		 * Function for initializing the EzQ. No initialization is required by default.
-		 * This method hook is provided as a convenience for extensibility purposes.
+		 * This method hook is provided as a convenience for extensibility.
 		 */
 		init: function() { },
 		
@@ -61,18 +61,21 @@
 		 * Determine whether or not the autoDelay timer should continue looping.
 		 * This method hook provides the ability to actually delay the processing
 		 * of the queue.
+		 * 
+		 * This method is not called if <code>this.q.autoDelay</code> is not set to
+		 * <code>TRUE</code>.
 		 */
 		shouldContinue: function() { },
 		
 		/**
 		 * Utilize Window#setInterval(function, interval) to poll for a completeness
-		 * condition every autoDelayMs milliseconds. When the condition is met, clear
-		 * the timer and proceed to the next queued action.
+		 * condition every <code>this.q.autoDelayMs</code> milliseconds. When the
+		 * condition is met, clear the timer and proceed to the next queued action.
 		 * 
 		 * Returns <code>this</code> to maintain chainability.
 		 */
 		autoDelay: function(next) {
-			if(this.queue.autoDelay)
+			if(this.q.autoDelay)
 			{
 				var self = this;
 				var timer = setInterval(function() {
@@ -83,7 +86,7 @@
 						//Then proceed to the next queued action.
 						next();
 					}
-				}, self.queue.autoDelayMs)
+				}, self.q.autoDelayMs)
 			}
 			
 			return this;
@@ -94,11 +97,11 @@
 		 * 
 		 * Returns <code>TRUE</code> if and only if the
 		 */
-		processQueue: function() {
-			if(!this.isQueueProcessing() && $(this).queue(this.queue.name).length > 0)
+		processQ: function() {
+			if(!this.isQProcessing() && $(this).queue(this.q.name).length > 0)
 			{
-				this.queue.processing = true;
-				$(this).dequeue(this.queue.name);
+				this.q.processing = true;
+				$(this).dequeue(this.q.name);
 				
 				return true;
 			}
@@ -111,25 +114,25 @@
 		 * 
 		 * Returns <code>this</code> to maintain chainability.
 		 */
-		queueAction: function(action) {
+		qAction: function(action) {
 			if($.isFunction(action))
 			{
 				var self = this;
 				//Queue the action first
-				$(self).queue(self.queue.name, action);
+				$(self).queue(self.q.name, action);
 				
 				//Next queue the auto delay function, if we are auto delaying
-				if(self.queue.autoDelay)
-					$(self).queue(self.queue.name, self.autoDelay);
+				if(self.q.autoDelay)
+					$(self).queue(self.q.name, self.autoDelay);
 				/*
 				 * Update the processing status of the queue automatically.
 				 * Since the function is removed from the queue before being run,
-				 * when self.isQueueProcessing() is run if this was the final
+				 * when self.isQProcessing() is run if this was the final
 				 * queued action self.queue.processing will be set to false.
 				 */
-				$(self).queue(self.queue.name,
+				$(self).queue(self.q.name,
 						function(next) {
-							self.isQueueProcessing()
+							self.isQProcessing()
 							next();
 						}
 					);
@@ -143,10 +146,10 @@
 		 * 
 		 * Returns <code>this</code> to maintain chainability.
 		 */
-		queueActions: function(actions) {
+		qActions: function(actions) {
 			var self = this;
 			$(actions).each(function(i, fn) {
-				self.queueAction(fn);
+				self.qAction(fn);
 			});
 			
 			return this;
@@ -158,10 +161,10 @@
 		 * Returns <code>TRUE</code> if and only if the queue is being processed
 		 * and there are still queued actions to perform.
 		 */
-		isQueueProcessing: function() {
-			if(this.queue.processing && $(this).queue(this.queue.name).length < 1)
-					this.queue.processing = false;
-			return this.queue.processing;
+		isQProcessing: function() {
+			if(this.q.processing && $(this).queue(this.q.name).length < 1)
+					this.q.processing = false;
+			return this.q.processing;
 		}
 	};
 })(jQuery);
@@ -170,7 +173,7 @@
 /*
 var i = 0;
 var testq = $('body').ezq({
-    queue: {
+    q: {
         name: 'testq',
         autoDelay: false,
         autoDelayMs: 3000
@@ -187,15 +190,15 @@ var testq = $('body').ezq({
     }
 });
 
-testq.queueAction(function(next) {
+testq.qAction(function(next) {
     i = 0;
     console.log('first action');
     next();
-}).queueAction(function(next) {
+}).qAction(function(next) {
     i = 0;
     console.log('second action');
     next();
-}).queueAction(function(next) {
+}).qAction(function(next) {
     i = 0;
     console.log('third action');
     next();
@@ -204,6 +207,6 @@ testq.queueAction(function(next) {
 
 //console.log(testq);
 //console.log($('body').data('ezq-testq'));
-//testq.processQueue();
-//$('body').data('ezq-testq').processQueue();
-//testq.queue.processing;
+//testq.processQ();
+//$('body').data('ezq-testq').processQ();
+//testq.q.processing;
